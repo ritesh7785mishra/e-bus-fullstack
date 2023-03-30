@@ -1,0 +1,9 @@
+.cardContainer {
+  display: grid;
+  justify-content: center;
+}
+
+.buttonHome {
+  display: flex;
+  justify-content: space-around;
+}

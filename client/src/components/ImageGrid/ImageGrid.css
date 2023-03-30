@@ -1,0 +1,30 @@
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 40px);
+  grid-template-rows: repeat(24, 40px);
+  gap: 2px;
+}
+.imageGrid > div {
+  border: solid red 2px;
+  margin: 2px;
+  min-width: 4em;
+}
+
+.vertical,
+.horizontal,
+.big {
+  border-radius: 6px;
+}
+
+.vertical {
+  grid-row: span 2;
+}
+
+.horizontal {
+  grid-column: span 2;
+}
+
+.big {
+  grid-row: span 2;
+  grid-column: span 2;
+}

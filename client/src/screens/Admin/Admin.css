@@ -1,0 +1,17 @@
+.adminBox {
+  margin: 0 auto;
+  border-radius: 5px;
+  text-align: center;
+  max-width: 375px;
+  padding: 2em;
+  box-shadow: 3px 6px 32px 0px rgba(136, 136, 136, 0.39);
+}
+
+.heading {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.addressHeadline {
+  align-self: center;
+}

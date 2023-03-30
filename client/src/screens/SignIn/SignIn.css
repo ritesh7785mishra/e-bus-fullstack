@@ -1,0 +1,101 @@
+.signInBox {
+  margin: 0 auto;
+  border-radius: 5px;
+  text-align: center;
+
+  padding: 2em;
+  box-shadow: 3px 6px 32px 0px rgba(136, 136, 136, 0.39);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem;
+  /* border: solid red 1px; */
+}
+.title > h1 {
+  margin-left: -1rem;
+  color: gray;
+}
+.logoContainer {
+  height: 4rem;
+  width: 4rem;
+  margin-left: 0.2rem;
+  margin-right: 1rem;
+}
+.logoContainer > img {
+  object-fit: cover;
+  height: 100%;
+}
+/* Animation generated for welcome text */
+.tracking-in-expand {
+  -webkit-animation: tracking-in-expand 0.7s cubic-bezier(0.215, 0.61, 0.355, 1)
+    both;
+  animation: tracking-in-expand 0.7s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+}
+
+@-webkit-keyframes tracking-in-expand {
+  0% {
+    letter-spacing: -0.5em;
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes tracking-in-expand {
+  0% {
+    letter-spacing: -0.5em;
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.forgetPassword {
+  font-size: 0.9rem;
+  align-self: flex-end;
+  margin: none;
+  color: gray;
+  cursor: pointer;
+}
+.warning {
+  font-size: 0.75rem;
+  color: red;
+}
+
+.loginBtn {
+  border: none;
+  font-size: 1.2rem;
+  color: white;
+  border-radius: 20px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 212, 255, 1) 10%,
+    rgba(189, 72, 195, 1) 64%
+  );
+  padding: 0.4em;
+  cursor: pointer;
+  margin-bottom: 2em;
+}
+
+.loginBtn:hover {
+  box-shadow: 3px 6px 32px 10px rgba(136, 136, 136, 0.39);
+  background: rgba(0, 212, 255, 1);
+}
+
+.loginBtn:active {
+  transform: translateY(2px);
+}
+
+.signUpHead {
+  align-self: center;
+}

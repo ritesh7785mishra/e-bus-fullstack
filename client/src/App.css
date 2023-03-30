@@ -1,0 +1,11 @@
+body {
+  border: solid red 1px;
+}
+
+.formBox {
+  box-shadow: 3px 6px 32px 0px rgba(136, 136, 136, 0.39);
+  padding: 2em;
+  border-radius: 20px;
+  max-width: 20em;
+  margin: 1em auto;
+}

@@ -1,0 +1,33 @@
+{
+  "name": "bus-app-react",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@material-tailwind/react": "^1.4.2",
+    "@mui/icons-material": "^5.10.9",
+    "@mui/material": "^5.10.12",
+    "@tomtom-international/web-sdk-maps": "^6.21.3",
+    "@tomtom-international/web-sdk-services": "^6.21.3",
+    "abort-controller": "^3.0.0",
+    "dotenv": "^16.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-geolocated": "^4.0.3",
+    "react-router-dom": "^6.4.3",
+    "use-fetch-on-interval": "^0.0.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.22",
+    "@types/react-dom": "^18.0.7",
+    "@vitejs/plugin-react": "^2.2.0",
+    "vite": "^3.2.0"
+  }
+}
