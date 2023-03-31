@@ -1,13 +1,18 @@
 .imageGrid {
   display: grid;
-  grid-template-columns: repeat(5, 40px);
-  grid-template-rows: repeat(24, 40px);
-  gap: 2px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(auto, 200px);
+  /* border: solid green 2px; */
+  width: 500px;
+  height: 500px;
+
+  overflow: hidden;
 }
-.imageGrid > div {
-  border: solid red 2px;
-  margin: 2px;
+.imageGrid > img {
+  width: 100%;
+  border-radius: 10px;
   min-width: 4em;
+  object-fit: cover;
 }
 
 .vertical,

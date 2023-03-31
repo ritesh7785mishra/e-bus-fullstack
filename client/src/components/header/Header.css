@@ -1,0 +1,7 @@
+.header {
+  box-shadow: 3px 6px 32px 0px rgba(136, 136, 136, 0.39);
+  margin: 1rem auto;
+}
+.headerImage {
+  height: 4rem;
+}
