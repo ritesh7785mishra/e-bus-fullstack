@@ -43,6 +43,11 @@ function Home(props) {
   ];
 
   useEffect(() => {
+    navigator.geolocation.getCurrentPosition(function (position) {
+      setLatitude(position.coords.latitude);
+      setLongitude(position.coords.longitude);
+    });
+
     async function fetchLocations() {
       const res = await fetch(`http://localhost:3000/user/all-buses`);
       const data = await res.json();
@@ -58,13 +63,7 @@ function Home(props) {
     }
     fetchLocations();
 
-    let interval 
-    
-
-    navigator.geolocation.getCurrentPosition(function (position) {
-      setLatitude(position.coords.latitude);
-      setLongitude(position.coords.longitude);
-    });
+    let interval;
 
     // defines origin
     const origin = {

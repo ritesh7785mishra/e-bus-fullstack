@@ -20,11 +20,10 @@ const Footer = () => {
       //     padding: "0.5em",
       //   }}
       className="shadow"
-      spacing={2}
     >
       <Stack
-        direction="row"
-        spacing={3}
+        direction={{ sm: "column" }}
+        spacing={2}
         alignItems="center"
         justifyContent="space-between"
       >
@@ -32,20 +31,25 @@ const Footer = () => {
           <img src={companyLogo} alt="" />
         </div>
 
-        <Stack spacing={3} direction="row" alignItems="center">
-          <WhatsAppIcon />
-          <LinkedInIcon />
-          <InstagramIcon />
-          <FacebookIcon />
+        <Stack
+          spacing={3}
+          direction={{ sm: "column", md: "row" }}
+          alignItems="center"
+        >
+          <div> "All Rights Reserved."</div>
+
+          <Stack spacing={2} direction="row">
+            <WhatsAppIcon />
+            <LinkedInIcon />
+            <InstagramIcon />
+            <FacebookIcon />
+          </Stack>
+
           <Stack direction="row" alignItems="center">
             <Button>Contact Us</Button>
             <ContactMailIcon />
           </Stack>
         </Stack>
-      </Stack>
-      <Stack direction="row">
-        <div> "All Rights Reserved."</div>
-        <Stack></Stack>
       </Stack>
     </Stack>
   );

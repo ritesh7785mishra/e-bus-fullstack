@@ -13,14 +13,12 @@ import SignUp from "./screens/SignUp/SignUp";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import busImg from "./assets/bus-home.jpg";
 
+
 function App() {
   return (
     <div className="App">
       <Header />
       <Stack direction="row" justifyContent="space-evenly">
-        <div className="shadow homeCard" sx={{ margin: "1rem" }}>
-          <img src={busImg} className="homeImg" alt="" />
-        </div>
         <Router>
           <Routes>
             <Route exact path="/" element={<SignIn />} />
