@@ -18,11 +18,11 @@ const userRouter = express.Router();
 
 userRouter.route("/user-signup").post(userSignup);
 userRouter.route("/user-login").post(userLogin);
-// userRouter.use(userProtectRoute);
-userRouter.route("/user-profile").get(getUser);
 userRouter.route("/all-buses").get(getAllBuses);
 userRouter.route("/route-selected-buses").get(routeSelectedBuses);
 userRouter.route("/profile/:id").patch(updateUser).delete(deleteUser);
 userRouter.route("/logout").get(userLogout);
+// userRouter.use(userProtectRoute);
+userRouter.route("/user-profile").post(getUser);
 
 module.exports = userRouter;

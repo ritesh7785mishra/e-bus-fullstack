@@ -1,12 +1,19 @@
 const locationModel = require("../models/locationModel");
 const userModel = require("../models/userModel");
+const jwt = require("jsonwebtoken");
+
+const { JWT_KEY } = process.env;
 
 module.exports.getUser = async function getUser(req, res) {
-  let id = req.id;
-  let user = await userModel.findById(id);
+  let { authToken } = req.body;
+  console.log("This is authToken int the backend", authToken);
+  let payload = jwt.verify(authToken, JWT_KEY);
 
-  if (user) {
-    res.json(user);
+  if (payload) {
+    const user = await userModel.findById(payload.payload);
+    res.json({
+      user,
+    });
   } else {
     res.json({
       message: "user not found",

@@ -24,9 +24,6 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    validate: function () {
-      return emailValidator.validate(this.email);
-    },
   },
   password: {
     type: String,
@@ -41,9 +38,6 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
     minLength: 8,
-    validate: function () {
-      return this.confirmPassword == this.password;
-    },
   },
   profileImage: {
     type: String,

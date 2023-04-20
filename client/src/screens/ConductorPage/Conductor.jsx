@@ -19,8 +19,12 @@ function Conductor() {
   const [emptySeatsBtn, setEmptySeatsBtn] = useState(true);
   const [shareLocationBtn, setShareLocationBtn] = useState(false);
   const [stopLocationBtn, setStopLocationBtn] = useState(false);
-  const { currentConductor, setCurrentConductor, conductorLoggedIn } =
-    useContext(Context);
+  const {
+    currentConductor,
+    setCurrentConductor,
+    conductorLoggedIn,
+    getConductorProfile,
+  } = useContext(Context);
 
   const top10Routes = [
     { label: "SanjeevNagar-Tatmil-Rawatpur-IIT" },
@@ -37,6 +41,7 @@ function Conductor() {
   ];
 
   useEffect(() => {
+    getConductorProfile();
     // function to send position to the mongodb location database.
     const sendPosition = () => {
       navigator.geolocation.getCurrentPosition(async function (position) {
@@ -209,6 +214,7 @@ function Conductor() {
           <Button
             onClick={() => {
               navigate("/conductor-login");
+              localStorage.removeItem("conductorAuthToken");
               setCurrentConductor({});
             }}
             variant="contained"

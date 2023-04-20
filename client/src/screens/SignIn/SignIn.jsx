@@ -1,5 +1,5 @@
 import "./SignIn.css";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 
 import { Box, Stack, InputAdornment, Button, IconButton } from "@mui/material";
 import { TextField } from "@mui/material";
@@ -17,8 +17,14 @@ import ImageGrid from "../../components/ImageGrid/ImageGrid";
 
 function SignIn() {
   const navigate = useNavigate();
-  const { getUserProfile } = useContext(Context);
+  const { userLogin, getUserProfile } = useContext(Context);
 
+  useEffect(() => {
+    if (localStorage.getItem("authToken")) {
+      getUserProfile();
+      navigate("/home");
+    }
+  }, []);
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -44,7 +50,7 @@ function SignIn() {
     ) {
       navigate("/all-conductors");
     } else {
-      const res = await getUserProfile(loginData).then(() => navigate("/home"));
+      const res = await userLogin(loginData).then(() => navigate("/home"));
     }
   };
 

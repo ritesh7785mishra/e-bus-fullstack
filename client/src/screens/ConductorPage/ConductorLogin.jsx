@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Box, Stack, InputAdornment } from "@mui/material";
 import { TextField } from "@mui/material";
 import MarkunreadOutlinedIcon from "@mui/icons-material/MarkunreadOutlined";
@@ -8,10 +8,13 @@ import { Context } from "../../Context";
 
 function ConductorLogin() {
   const navigate = useNavigate();
-  const { handleConductorLogin, conductorLoggedIn } = useContext(Context);
-  if (conductorLoggedIn) {
-    navigate("/conductor");
-  }
+  const { handleConductorLogin } = useContext(Context);
+
+  useEffect(() => {
+    if (localStorage.getItem("conductorAuthToken")) {
+      navigate("/conductor");
+    }
+  }, []);
 
   const [conductorLogin, setConductorLogin] = useState({
     email: "",
@@ -67,8 +70,8 @@ function ConductorLogin() {
           <p className="forgetPassword">Forget Password ?</p>
           <button
             className="loginBtn"
-            onClick={() => {
-              handleConductorLogin(conductorLogin);
+            onClick={async () => {
+              handleConductorLogin(conductorLogin).then(navigate("/conductor"));
             }}
           >
             LOGIN

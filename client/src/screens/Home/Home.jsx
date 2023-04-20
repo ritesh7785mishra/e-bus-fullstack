@@ -14,9 +14,10 @@ import { Context } from "../../Context";
 
 function Home(props) {
   const navigate = useNavigate();
-  const { currentUser, handleUserLogout } = useContext(Context);
-  const { name } = currentUser.data;
-  const { message } = currentUser;
+  const { currentUser, handleUserLogout, getUserProfile } = useContext(Context);
+
+  const { name } = currentUser;
+
   //Using useRef hook to get JS ability to add map to the react application because tom tom api doesn't work good with the react element.
   const mapElement = useRef();
   const [allLocationArray, setAllLocationArray] = useState([]);
@@ -43,6 +44,7 @@ function Home(props) {
   ];
 
   useEffect(() => {
+    getUserProfile();
     navigator.geolocation.getCurrentPosition(function (position) {
       setLatitude(position.coords.latitude);
       setLongitude(position.coords.longitude);

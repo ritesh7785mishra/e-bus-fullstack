@@ -7,6 +7,7 @@ const { JWT_KEY } = process.env;
 module.exports.conductorLogin = async function conductorLogin(req, res) {
   try {
     let data = req.body;
+
     if (data.email) {
       let conductor = await conductorModel.findOne({
         "properties.email": `${data.email}`,
@@ -14,17 +15,17 @@ module.exports.conductorLogin = async function conductorLogin(req, res) {
 
       if (conductor) {
         if (conductor.properties.password == data.password) {
-          let cid = conductor["id"];
+          let cid = conductor["_id"];
           let token = jwt.sign({ payload: cid }, JWT_KEY);
 
-          res.cookie("conductorLogin", token, {
-            // httpOnly: true,
-            path: "/conductor",
-          });
+          // res.cookie("conductorLogin", token, {
+          //   // httpOnly: true,
+          //   path: "/conductor",
+          // });
 
           return res.json({
             message: "conductor logged in successfully",
-            data: conductor,
+            conductorAuthToken: token,
           });
         } else {
           res.json({
@@ -39,6 +40,34 @@ module.exports.conductorLogin = async function conductorLogin(req, res) {
     } else {
       res.json({
         message: "Please enter your email",
+      });
+    }
+  } catch (error) {
+    res.json({
+      message: error.message,
+    });
+  }
+};
+
+//getConductor Profile
+
+module.exports.getConductorProfile = async function getConductorProfile(
+  req,
+  res
+) {
+  try {
+    let { conductorAuthToken } = req.body;
+    let payload = jwt.verify(conductorAuthToken, JWT_KEY);
+
+    if (payload) {
+      const conductor = await conductorModel.findById(payload.payload);
+
+      res.json({
+        conductor,
+      });
+    } else {
+      res.json({
+        message: "conductor not found",
       });
     }
   } catch (error) {

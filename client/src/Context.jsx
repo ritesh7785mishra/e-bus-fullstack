@@ -75,24 +75,47 @@ function ContextProvider({ children }) {
   //conductorLogin
   const handleConductorLogin = async (dataObj) => {
     try {
-      fetch(`http://localhost:3000/conductor/conductor-login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-        body: JSON.stringify(dataObj),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data, "this is login data");
-          setCurrentConductor(data.data);
-          setConductorLoggedIn(true);
-        });
+      const res = await fetch(
+        `http://localhost:3000/conductor/conductor-login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dataObj),
+        }
+      );
+
+      const data = await res.json();
+      if (data) {
+        localStorage.setItem("conductorAuthToken", data.conductorAuthToken);
+      }
     } catch (error) {
       console.log(error.message);
     }
   };
 
   //conductorProfile
+  const getConductorProfile = async () => {
+    try {
+      let conductorAuthToken = localStorage.getItem("conductorAuthToken");
+      const res = await fetch(
+        `http://localhost:3000/conductor/conductor-profile`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Headers": "*",
+          },
+
+          body: JSON.stringify({ conductorAuthToken }),
+        }
+      );
+      const data = await res.json();
+
+      setCurrentConductor({ ...data.conductor });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   /*****************USER FUNCTIONALITY*********************/
   //will add user to the userModel
@@ -115,18 +138,48 @@ function ContextProvider({ children }) {
     }
   };
 
+  //get user profile after logged in.
+
+  const getUserProfile = async () => {
+    try {
+      const authToken = localStorage.getItem("authToken");
+
+      console.log(
+        "This is localstorage getItem authToken in the frontend",
+        authToken
+      );
+      const res = await fetch(`http://localhost:3000/user/user-profile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Headers": "*",
+        },
+
+        body: JSON.stringify({ authToken }),
+      });
+      const data = await res.json();
+      if (data) {
+        console.log(data);
+        setCurrentUser({ ...data.user });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   //get user from the database
-  const getUserProfile = async (loginData) => {
+  const userLogin = async (loginData) => {
     try {
       const res = await fetch(`http://localhost:3000/user/user-login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
+        withCredentials: true,
       });
       const data = await res.json();
       if (data) {
-        setCurrentUser(data);
-        console.log(data);
+        localStorage.setItem("authToken", data.authToken);
+        localStorage.setItem("userEmail", loginData.email);
       }
       return;
     } catch (error) {
@@ -136,6 +189,8 @@ function ContextProvider({ children }) {
   };
   //logout user
   const handleUserLogout = async () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userEmail");
     setCurrentUser({});
   };
 
@@ -147,11 +202,13 @@ function ContextProvider({ children }) {
         handleConductorDelete,
         handleAddConductor,
         handleConductorLogin,
+        getConductorProfile,
         currentConductor,
         conductorLoggedIn,
+        getUserProfile,
         setCurrentConductor,
         postUser,
-        getUserProfile,
+        userLogin,
         currentUser,
         handleUserLogout,
       }}

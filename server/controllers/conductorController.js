@@ -3,19 +3,21 @@ const locationModel = require("../models/locationModel");
 const jwt = require("jsonwebtoken");
 const { apiKey, adminKey, baseUrl, JWT_KEY } = process.env;
 
-//get conductor profile
+//getConductor Profile
+
 module.exports.getConductorProfile = async function getConductorProfile(
   req,
   res
 ) {
   try {
-    let id = req.id;
-    console.log(id, "this is transferred id");
-    let conductor = await conductorModel.findOne({ id: id });
-    if (conductor) {
+    let { conductorAuthToken } = req.body;
+    let payload = jwt.verify(conductorAuthToken, JWT_KEY);
+
+    if (payload) {
+      const conductor = await conductorModel.findById(payload.payload);
+
       res.json({
-        message: "Retreived conductor profile",
-        data: conductor,
+        conductor,
       });
     } else {
       res.json({

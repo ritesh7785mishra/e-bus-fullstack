@@ -14,6 +14,7 @@ const {
 const conductorRouter = express.Router();
 
 conductorRouter.route("/conductor-login").post(conductorLogin);
+conductorRouter.route("/conductor-profile").post(getConductorProfile);
 // conductorRouter.use(protectConductorRoute);
 conductorRouter.route("/conductor-profile").get(getConductorProfile);
 

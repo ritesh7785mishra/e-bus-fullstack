@@ -2,14 +2,21 @@ const userModel = require("../models/userModel");
 const { JWT_KEY } = process.env;
 const jwt = require("jsonwebtoken");
 const { sendMail } = require("../utility/nodemailer");
-const { model } = require("mongoose");
+
+const bcrypt = require("bcryptjs");
 
 //sign up user
 
 module.exports.userSignup = async function userSignup(req, res) {
   try {
     let dataObj = req.body;
-    let user = await userModel.create(dataObj);
+    const salt = await bcrypt.genSalt(10);
+    let secPassword = await bcrypt.hash(req.body.password, salt);
+    let user = await userModel.create({
+      ...dataObj,
+      password: secPassword,
+      confirmPassword: secPassword,
+    });
 
     if (user) {
       sendMail("signup", user);
@@ -34,22 +41,26 @@ module.exports.userSignup = async function userSignup(req, res) {
 module.exports.userLogin = async function userLogin(req, res) {
   try {
     let data = req.body;
+    const { password } = data;
+
     if (data.email) {
       let user = await userModel.findOne({
         email: data.email,
       });
 
       if (user) {
-        if (user.password == data.password) {
+        const pwdCompare = await bcrypt.compare(password, user.password);
+
+        if (pwdCompare) {
           let uid = user["_id"];
           let token = jwt.sign({ payload: uid }, JWT_KEY);
-          res.cookie("userLogin", token, {
-            httpOnly: true,
-          });
+
+          // res.cookie("login", token, { httpOnly: true });
 
           return res.json({
             message: "user has logged in ",
             data: user,
+            authToken: token,
           });
         } else {
           return res.json({
@@ -81,12 +92,16 @@ module.exports.userProtectRoute = async function userProtectRoute(
   next
 ) {
   try {
-    let token = req.cookies.userLogin;
-    if (token) {
+    let token;
+    if (req.cookies.login) {
+      token = req.cookies.login;
       let payload = jwt.verify(token, JWT_KEY);
 
       if (payload) {
         const user = await userModel.findById(payload.payload);
+
+        console.log(payload.payload);
+        console.log("Thisi is user.id", user.id);
         req.id = user.id;
         next();
       }
@@ -94,10 +109,10 @@ module.exports.userProtectRoute = async function userProtectRoute(
       const client = req.get("User-Agent");
 
       if (client.includes("Mozilla") == true) {
-        res.redirect("/userLogin");
+        res.redirect("/user-login");
       }
 
-      res.json({
+      return res.json({
         message: "Please login",
       });
     }
