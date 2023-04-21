@@ -18,8 +18,8 @@ conductorRouter.route("/conductor-profile").post(getConductorProfile);
 // conductorRouter.use(protectConductorRoute);
 conductorRouter.route("/conductor-profile").get(getConductorProfile);
 
-conductorRouter.route("/updateRoute").patch(updateConductorRoute);
-conductorRouter.route("/updateLocation").patch(addCurrentLocation);
+conductorRouter.route("/update-current-route").patch(updateConductorRoute);
+conductorRouter.route("/update-location").patch(addCurrentLocation);
 conductorRouter.route("/update-seat-status").patch(seatStatusUpdate);
 conductorRouter.route("/logout").get(conductorLogout);
 

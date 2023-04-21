@@ -22,10 +22,11 @@ function Home(props) {
   //Using useRef hook to get JS ability to add map to the react application because tom tom api doesn't work good with the react element.
   const mapElement = useRef();
   const [allLocationArray, setAllLocationArray] = useState([]);
+  console.log("This is all Location Array", allLocationArray);
 
   const [map, setMap] = useState({});
   const [longitude, setLongitude] = useState(80);
-
+  //26.423649620885715, 80.39904990500386
   const [latitude, setLatitude] = useState(27);
 
   const routeOptions = [
@@ -56,6 +57,7 @@ function Home(props) {
     if (data) {
       const allLocationData = data.data;
       locationObjArray(allLocationData);
+      console.log(allLocationData, "This is data. data");
     }
   }
 
@@ -65,6 +67,19 @@ function Home(props) {
       setLatitude(position.coords.latitude);
       setLongitude(position.coords.longitude);
     });
+
+    fetchLocations();
+
+    let interval;
+
+    // defines origin
+    const origin = {
+      lng: longitude,
+      lat: latitude,
+    };
+
+    //this is destinations array which takes up all the location where delivery boy has to deliver items
+    const destinations = [];
 
     //creates a map div. which is visible on the client side.
     let map = tt.map({
@@ -85,7 +100,7 @@ function Home(props) {
     setMap(map);
 
     //this is the origin location I think
-    const addUserCurrentPosition = () => {
+    const addMarker = () => {
       //creates a off set.
       const popupOffset = {
         bottom: [0, -25],
@@ -116,7 +131,69 @@ function Home(props) {
       //this I think to toggle the popup
       marker.setPopup(popup).togglePopup();
     };
-    addUserCurrentPosition(); // add marker called to set the origin position.
+    addMarker(); // add marker called to set the origin position.
+
+    //this function is used to sort the locations to make the perfect route. *Still need to understand it perfectly*
+    const sortDestinations = (locations) => {
+      //converts locations to pointsfor destination.
+      const pointsForDestinations = locations.map((destination) => {
+        return convertToPoints(destination);
+      });
+
+      const callParameters = {
+        key: apiKey,
+        destinations: pointsForDestinations,
+        origins: [convertToPoints(origin)],
+      };
+
+      return new Promise((resolve, reject) => {
+        ttapi.services
+          .matrixRouting(callParameters)
+          .then((matrixAPIResults) => {
+            const results = matrixAPIResults.matrix[0];
+            const resultsArray = results.map((result, index) => {
+              return {
+                location: locations[index],
+                drivingtime: result.response.routeSummary.travelTimeInSeconds,
+              };
+            });
+            resultsArray.sort((a, b) => {
+              return a.drivingtime - b.drivingtime;
+            });
+            const sortedLocations = resultsArray.map((result) => {
+              return result.location;
+            });
+            resolve(sortedLocations);
+          });
+      });
+    };
+
+    //calculates and make routes.
+    const recalculateRoutes = () => {
+      sortDestinations(destinations).then((sorted) => {
+        sorted.unshift(origin);
+
+        ttapi.services
+          .calculateRoute({
+            key: apiKey,
+            locations: sorted,
+          })
+          .then((routeData) => {
+            const geoJson = routeData.toGeoJson();
+            drawRoute(geoJson, map);
+          });
+      });
+    };
+
+    map.on("click", (e) => {
+      //pushes lngLat from the map to the destinations folder
+      console.log(e.lngLat);
+      destinations.push(e.lngLat);
+      //adds delivery point on the map
+      addDeliveryMarker(e.lngLat, map);
+      recalculateRoutes();
+      console.log(destinations, "This is destinations array");
+    });
 
     allLocationArray.map((location) => {
       const lObj = {

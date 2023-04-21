@@ -6,11 +6,12 @@ const Context = React.createContext();
 
 function ContextProvider({ children }) {
   const [allConductors, setAllConductors] = useState([]);
-  const [currentConductor, setCurrentConductor] = useState();
+  const [currentConductor, setCurrentConductor] = useState({});
   const [conductorLoggedIn, setConductorLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
 
   console.log(allConductors);
+  console.log("This is current conductor", currentConductor);
 
   /********************ADMIN FUNCTIONALITY*********************/
 
@@ -85,18 +86,25 @@ function ContextProvider({ children }) {
       );
 
       const data = await res.json();
+
       if (data) {
         localStorage.setItem("conductorAuthToken", data.conductorAuthToken);
+
+        if (localStorage.getItem("conductorAuthToken")) {
+          getConductorProfile();
+        }
       }
+
+      return;
     } catch (error) {
       console.log(error.message);
+      return;
     }
   };
 
   //conductorProfile
   const getConductorProfile = async () => {
     try {
-      let conductorAuthToken = localStorage.getItem("conductorAuthToken");
       const res = await fetch(
         `http://localhost:3000/conductor/conductor-profile`,
         {
@@ -105,13 +113,16 @@ function ContextProvider({ children }) {
             "Content-Type": "application/json",
             "Access-Control-Allow-Headers": "*",
           },
-
-          body: JSON.stringify({ conductorAuthToken }),
+          body: JSON.stringify({
+            conductorAuthToken: localStorage.getItem("conductorAuthToken"),
+          }),
         }
       );
       const data = await res.json();
-
-      setCurrentConductor({ ...data.conductor });
+      if (data) {
+        console.log("This is condutor data", data);
+        setCurrentConductor(data);
+      }
     } catch (error) {
       console.log(error.message);
     }
@@ -205,6 +216,7 @@ function ContextProvider({ children }) {
         getConductorProfile,
         currentConductor,
         conductorLoggedIn,
+        setConductorLoggedIn,
         getUserProfile,
         setCurrentConductor,
         postUser,

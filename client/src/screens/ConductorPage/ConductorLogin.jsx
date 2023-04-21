@@ -8,13 +8,12 @@ import { Context } from "../../Context";
 
 function ConductorLogin() {
   const navigate = useNavigate();
-  const { handleConductorLogin } = useContext(Context);
-
-  useEffect(() => {
-    if (localStorage.getItem("conductorAuthToken")) {
-      navigate("/conductor");
-    }
-  }, []);
+  const {
+    handleConductorLogin,
+    currentConductor,
+    conductorLoggedIn,
+    getConductorProfile,
+  } = useContext(Context);
 
   const [conductorLogin, setConductorLogin] = useState({
     email: "",
@@ -70,8 +69,9 @@ function ConductorLogin() {
           <p className="forgetPassword">Forget Password ?</p>
           <button
             className="loginBtn"
-            onClick={async () => {
-              handleConductorLogin(conductorLogin).then(navigate("/conductor"));
+            onClick={() => {
+              handleConductorLogin(conductorLogin);
+              navigate("/conductor");
             }}
           >
             LOGIN

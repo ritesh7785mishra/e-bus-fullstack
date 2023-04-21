@@ -15,9 +15,12 @@ module.exports.getConductorProfile = async function getConductorProfile(
 
     if (payload) {
       const conductor = await conductorModel.findById(payload.payload);
-
+      console.log("This function called,", payload.payload);
+      console.log("This is founded conductor", conductor);
       res.json({
-        conductor,
+        name: conductor.name,
+        conductorId: conductor.properties.conductorId,
+        id: conductor.id,
       });
     } else {
       res.json({
@@ -37,15 +40,11 @@ module.exports.updateConductorRoute = async function updateConductorRoute(
   res
 ) {
   try {
-    const { id, route } = req.body;
-
-    // let userData = {productCode: "4pf"}
-    // let dataToBeUpdated = {claims: ["abc", "def"]}
-    // ProductModel.findOneAndUpdate({"products.productCode": userData.productCode}, {$set: {"products.$": dataToBeUpdated}})
+    const { id, currentRoute } = req.body;
 
     const updateRoute = await locationModel.findOneAndUpdate(
       { id: id },
-      { $set: { currentRoute: route } },
+      { $set: { currentRoute: currentRoute } },
       { new: true }
     );
 

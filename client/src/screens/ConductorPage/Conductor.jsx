@@ -14,6 +14,9 @@ import { Context } from "../../Context";
 
 function Conductor() {
   const navigate = useNavigate();
+  const [name, setName] = useState("conductorName");
+  const [id, setId] = useState("Conductor id");
+  const [currentRoute, setCurrentRoute] = useState("");
   const [fullBtn, setFullBtn] = useState(false);
   const [standingBtn, setStandingBtn] = useState(false);
   const [emptySeatsBtn, setEmptySeatsBtn] = useState(true);
@@ -22,33 +25,47 @@ function Conductor() {
   const {
     currentConductor,
     setCurrentConductor,
-    conductorLoggedIn,
     getConductorProfile,
+    setConductorLoggedIn,
   } = useContext(Context);
 
-  const top10Routes = [
-    { label: "SanjeevNagar-Tatmil-Rawatpur-IIT" },
-    { label: "IIT-Rawatpur-Tatmil-SanjeevNagar" },
-    { label: "SanjeevNagar-Rania" },
-    { label: "Rania-SanjeevNagar" },
-    { label: "SanjeevNagar-Ghantaghar-Nankari" },
-    { label: "SanjeevNagar-Jajmau-Bithoor" },
-    { label: "Bithoor-Jajmau-SanjeevNagar" },
-    { label: "Ramaipur-SanjeevNagar" },
-    { label: "SanjeevNagar-Ramaipur" },
-    { label: "SanjeevNagar-SainikChauraha" },
-    { label: "SainikChauraha-SanjeevNagar" },
+  console.log(currentRoute);
+
+  const routeOptions = [
+    "SanjeevNagar-Tatmil-Rawatpur-IIT",
+    "IIT-Rawatpur-Tatmil-SanjeevNagar",
+    "SanjeevNagar-Rania",
+    "Rania-SanjeevNagar",
+    "SanjeevNagar-Ghantaghar-Nankari",
+    "SanjeevNagar-Jajmau-Bithoor",
+    "Bithoor-Jajmau-SanjeevNagar",
+    "Ramaipur-SanjeevNagar",
+    "SanjeevNagar-Ramaipur",
+    "SanjeevNagar-SainikChauraha",
+    "SainikChauraha-SanjeevNagar",
   ];
 
   useEffect(() => {
-    getConductorProfile();
+    if (localStorage.getItem("conductorAuthToken")) {
+      getConductorProfile();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (currentConductor) {
+      setName(currentConductor.name);
+      setId(currentConductor.conductorId);
+    }
+  }, [currentConductor]);
+
+  useEffect(() => {
     // function to send position to the mongodb location database.
     const sendPosition = () => {
       navigator.geolocation.getCurrentPosition(async function (position) {
         let { latitude } = position.coords;
         let { longitude } = position.coords;
 
-        fetch(`http://localhost:3000/conductor/updateLocation`, {
+        fetch(`http://localhost:3000/conductor/update-location`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -89,63 +106,76 @@ function Conductor() {
     );
 
     const data = await res.json();
-    console.log(data, "This is Seat status update function");
+    console.log("This is Seat status update function", data);
   };
 
   const updateCurrentRoute = async (currentRoute) => {
-    const res = await fetch(
-      `http://localhost:3000/conductor/update-current-route`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          currentRoute: currentRoute,
-          id: currentConductor.id,
-        }),
+    try {
+      const res = await fetch(
+        `http://localhost:3000/conductor/update-current-route`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            currentRoute: currentRoute,
+            id: currentConductor.id,
+          }),
+        }
+      );
+
+      const data = await res.json();
+      if (data) {
+        console.log(data);
       }
-    );
+    } catch (error) {
+      console.log(error.messag);
+    }
   };
 
-  const page = () => {
-    return (
-      <div className="conductorBox">
-        <div className="nameAndId">
-          <div className="conductorName">
-            <AccountCircleIcon fontSize="large" />
-            <h3 className="nameHead">
-              {currentConductor.name ? currentConductor.name : "Conductor Name"}
-            </h3>
-          </div>
-          <div className="conductorId">
-            <p className="idHead">
-              {currentConductor.properties.conductorId
-                ? currentConductor.properties.conductorId
-                : 123456}
-            </p>
-            <BadgeIcon fontSize="large" />
-          </div>
+  return (
+    <div className="conductorBox">
+      <div className="nameAndId">
+        <div className="conductorName">
+          <AccountCircleIcon fontSize="large" />
+          <h3 className="nameHead">{name}</h3>
+        </div>
+        <div className="conductorId">
+          <p className="idHead">{id}</p>
+          <BadgeIcon fontSize="large" />
+        </div>
+      </div>
+
+      <Stack spacing={5}>
+        <div className="searchBar">
+          <h2>Select Your Current Route</h2>
+
+          <Autocomplete
+            disablePortal
+            id="combo-box-demo"
+            value={currentRoute}
+            onChange={(e, newValue) => {
+              setCurrentRoute(newValue);
+              updateCurrentRoute(currentRoute);
+            }}
+            // inputValue={route}
+            // onInputChange={(e, newValue) => {
+            //   setRoute(newValue);
+            // }}
+            options={routeOptions}
+            sx={{ width: "100%", margin: "2 auto" }}
+            renderInput={(params) => (
+              <TextField {...params} label="Select Route" size="small" />
+            )}
+          />
         </div>
 
-        <Stack spacing={5}>
-          <div className="searchBar">
-            <h2>Select Your Current Route</h2>
-
-            <Autocomplete
-              disablePortal
-              id="combo-box-demo"
-              options={top10Routes}
-              sx={{ width: "100%", margin: "2 auto" }}
-              renderInput={(params) => (
-                <TextField {...params} label="Select Route" size="small" />
-              )}
-            />
-          </div>
-
-          <Stack spacing={2}>
+        <Stack spacing={2}>
+          {currentRoute ? (
             <Button
               onClick={() => {
                 setShareLocationBtn(true);
                 setStopLocationBtn(false);
+                updateCurrentRoute(currentRoute);
               }}
               sx={{ alignSelf: "center" }}
               startIcon={<ShareLocationIcon fontSize="large" />}
@@ -154,80 +184,90 @@ function Conductor() {
             >
               Start Sharing Location
             </Button>
+          ) : (
             <Button
-              onClick={() => {
-                setShareLocationBtn(false);
-                setStopLocationBtn(true);
-              }}
-              sx={{ alignSelf: "center" }}
-              startIcon={<LocationOffIcon fontSize="large" />}
-              variant={stopLocationBtn ? "contained" : "outlined"}
+              variant="outlined"
               className="locationSharing"
-              color="error"
+              sx={{ alignSelf: "center" }}
+              disabled
+              startIcon={<ShareLocationIcon fontSize="large" />}
             >
-              Stop Sharing Location
+              Start Sharing location
             </Button>
-          </Stack>
-
-          <Stack spacing={3} direction="row">
-            <Button
-              onClick={() => {
-                setFullBtn(true);
-                updateSeatStatus("Full");
-                setStandingBtn(false);
-                setEmptySeatsBtn(false);
-              }}
-              className="spaceIndicationButton"
-              variant={fullBtn ? "contained" : "outlined"}
-              color="error"
-            >
-              Full
-            </Button>
-            <Button
-              onClick={() => {
-                setFullBtn(false);
-                setStandingBtn(true);
-                updateSeatStatus("Standing-Space");
-                setEmptySeatsBtn(false);
-              }}
-              className="spaceIndicationButton"
-              variant={standingBtn ? "contained" : "outlined"}
-              color="primary"
-            >
-              Standing Space
-            </Button>
-            <Button
-              onClick={() => {
-                setFullBtn(false);
-                setStandingBtn(false);
-                setEmptySeatsBtn(true);
-                updateSeatStatus("Empty");
-              }}
-              className="spaceIndicationButton"
-              variant={emptySeatsBtn ? "contained" : "outlined"}
-              color="success"
-            >
-              Empty Seats
-            </Button>
-          </Stack>
+          )}
 
           <Button
             onClick={() => {
-              navigate("/conductor-login");
-              localStorage.removeItem("conductorAuthToken");
-              setCurrentConductor({});
+              setShareLocationBtn(false);
+              setStopLocationBtn(true);
             }}
-            variant="contained"
-            color="warning"
+            sx={{ alignSelf: "center" }}
+            startIcon={<LocationOffIcon fontSize="large" />}
+            variant={stopLocationBtn ? "contained" : "outlined"}
+            className="locationSharing"
+            color="error"
           >
-            Logout
+            Stop Sharing Location
           </Button>
         </Stack>
-      </div>
-    );
-  };
 
-  return currentConductor ? page() : <h1>Please Login...</h1>;
+        <Stack spacing={3} direction="row">
+          <Button
+            onClick={() => {
+              setFullBtn(true);
+              updateSeatStatus("Full");
+              setStandingBtn(false);
+              setEmptySeatsBtn(false);
+            }}
+            className="spaceIndicationButton"
+            variant={fullBtn ? "contained" : "outlined"}
+            color="error"
+          >
+            Full
+          </Button>
+          <Button
+            onClick={() => {
+              setFullBtn(false);
+              setStandingBtn(true);
+              updateSeatStatus("Standing-Space");
+              setEmptySeatsBtn(false);
+            }}
+            className="spaceIndicationButton"
+            variant={standingBtn ? "contained" : "outlined"}
+            color="primary"
+          >
+            Standing Space
+          </Button>
+          <Button
+            onClick={() => {
+              setFullBtn(false);
+              setStandingBtn(false);
+              setEmptySeatsBtn(true);
+              updateSeatStatus("Empty");
+            }}
+            className="spaceIndicationButton"
+            variant={emptySeatsBtn ? "contained" : "outlined"}
+            color="success"
+          >
+            Empty Seats
+          </Button>
+        </Stack>
+
+        <Button
+          onClick={() => {
+            localStorage.removeItem("conductorAuthToken");
+            setCurrentConductor({});
+            setConductorLoggedIn(false);
+            navigate("/conductor-login");
+          }}
+          variant="contained"
+          color="warning"
+        >
+          Logout
+        </Button>
+      </Stack>
+    </div>
+  );
 }
 
 export default Conductor;

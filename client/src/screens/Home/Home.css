@@ -53,3 +53,11 @@
   background-color: transparent;
   border-radius: 11px;
 }
+
+.red-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+  border: 3px solid red;
+}
